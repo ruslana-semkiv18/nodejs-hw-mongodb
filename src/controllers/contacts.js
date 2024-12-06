@@ -5,10 +5,11 @@ import { parseSortParams } from "../utils/parseSortParams.js";
 import { sortByList } from "../db/models/Contact.js";
 
 export const getContactsController = async (req, res) => {
-    const {page, perPage} = parsePaginationParams(req.query);
-    const {sortBy, sortOrder} = parseSortParams(req.query, sortByList);
+    const { page, perPage } = parsePaginationParams(req.query);
+    const { sortBy, sortOrder } = parseSortParams(req.query, sortByList);
+    const { _id: userId } = req.user;
 
-    const data = await contactsServices.getContacts({ page, perPage, sortBy, sortOrder });
+    const data = await contactsServices.getContacts({ page, perPage, sortBy, sortOrder, userId });
     
     res.status(200).json({
         status: 200,
@@ -33,7 +34,9 @@ export const getContactByIdController = async (req, res) => {
 };
 
 export const addContactController = async (req, res) => {
-    const data = await contactsServices.addContact(req.body);
+     const { _id: userId } = req.user;
+    
+    const data = await contactsServices.addContact({...req.body, userId });
     
     res.status(201).json({
         status: 201,
